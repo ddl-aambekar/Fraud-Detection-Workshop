@@ -9,6 +9,10 @@
 .ipython/
 .ipynb_checkpoints/
 
+# Ignore pycache
+*.pyc*
+*__pycache__*
+
 # Ignore trash folders
 .trash/
 .Trash/
