@@ -1,48 +1,54 @@
 import os
-from flytekit import workflow, task, FlyteFile
+from flytekit import workflow
 from flytekitplugins.domino.task import DominoJobConfig, DominoJobTask
 
+# pyflyte run --remote --name train-models exercises/d_TrainingAndEvaluation/workflow.py credit_card_fraud_detection_workflow 
 DOMINO_WORKING_DIR = os.environ["DOMINO_WORKING_DIR"]
-DOMINO_DATASETS_DIR = os.environ["DOMINO_DATASETS_DIR"]
 
-# --- Task to "provide" the transformed CSV file ---
-# If the file is already in /mnt/data in the first job, we just wrap it as a FlyteFile output.
-@task
-def provide_transformed_file() -> FlyteFile:
-    # Path inside this job to the transformed file
-    path = f"{DOMINO_DATASETS_DIR}/Fraud-Detection-Workshop/transformed_cc_transactions.csv"
-    return FlyteFile(path)
-
+# --- Task to provide the transformed file path ---
+provide_transformed_file = DominoJobTask(
+    name="provide-transformed-file",
+    domino_job_config=DominoJobConfig(
+        # Writes the absolute path to the transformed CSV
+        Command=(
+            'bash -c "echo /mnt/data/Fraud-Detection-Workshop/transformed_cc_transactions.csv > transformed_filename"'
+        )
+    ),
+    inputs={},
+    outputs={"transformed_filename": str},
+    use_latest=True,
+    cache=False,
+)
 
 # --- Domino job tasks for training ---
 ada_training_task = DominoJobTask(
-    name="Train AdaBoost classifier",
+    name="train-ada",
     domino_job_config=DominoJobConfig(
         Command=f"python {DOMINO_WORKING_DIR}/exercises/d_TrainingAndEvaluation/trainer_ada.py"
     ),
-    inputs={"transformed_file": FlyteFile},
+    inputs={"transformed_filename": str},
     outputs={"results": str},
     use_latest=True,
     cache=True,
 )
 
 gnb_training_task = DominoJobTask(
-    name="Train GaussianNB classifier",
+    name="train-gnb",
     domino_job_config=DominoJobConfig(
         Command=f"python {DOMINO_WORKING_DIR}/exercises/d_TrainingAndEvaluation/trainer_gnb.py"
     ),
-    inputs={"transformed_file": FlyteFile},
+    inputs={"transformed_filename": str},
     outputs={"results": str},
     use_latest=True,
     cache=True,
 )
 
 xgb_training_task = DominoJobTask(
-    name="Train XGBoost classifier",
+    name="train-xgb",
     domino_job_config=DominoJobConfig(
         Command=f"python {DOMINO_WORKING_DIR}/exercises/d_TrainingAndEvaluation/trainer_xgb.py"
     ),
-    inputs={"transformed_file": FlyteFile},
+    inputs={"transformed_filename": str},
     outputs={"results": str},
     use_latest=True,
     cache=True,
@@ -50,7 +56,7 @@ xgb_training_task = DominoJobTask(
 
 # --- Compare results task ---
 compare_task = DominoJobTask(
-    name="Compare training results",
+    name="compare-results",
     domino_job_config=DominoJobConfig(
         Command=f"python {DOMINO_WORKING_DIR}/exercises/d_TrainingAndEvaluation/compare.py"
     ),
@@ -62,13 +68,13 @@ compare_task = DominoJobTask(
 # --- Workflow definition ---
 @workflow
 def credit_card_fraud_detection_workflow() -> str:
-    # Step 1: Produce or locate the transformed CSV
-    transformed_file = provide_transformed_file()
+    # Step 1: Provide the transformed CSV path
+    transformed_filename = provide_transformed_file()
 
-    # Step 2: Train models (Flyte passes file between jobs)
-    ada_results = ada_training_task(transformed_file=transformed_file)
-    gnb_results = gnb_training_task(transformed_file=transformed_file)
-    xgb_results = xgb_training_task(transformed_file=transformed_file)
+    # Step 2: Train models
+    ada_results = ada_training_task(transformed_filename=transformed_filename)
+    gnb_results = gnb_training_task(transformed_filename=transformed_filename)
+    xgb_results = xgb_training_task(transformed_filename=transformed_filename)
 
     # Step 3: Compare results
     comparison = compare_task(
