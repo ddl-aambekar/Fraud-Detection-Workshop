@@ -2,6 +2,8 @@
 from pathlib import Path
 import json
 from xgboost import XGBClassifier
+import sys
+sys.path.append(os.environ["DOMINO_WORKING_DIR"])
 from exercises.d_TrainingAndEvaluation.generic_trainer import train_fraud
 
 # Load DataFrame from dataset 

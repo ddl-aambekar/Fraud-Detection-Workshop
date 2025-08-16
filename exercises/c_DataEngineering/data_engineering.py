@@ -24,8 +24,7 @@ from sklearn.pipeline import Pipeline
 from domino import Domino
 from mlflow.models import infer_signature
 import sys
-sys.path.append("/mnt")
-sys.path.append("/mnt/code")
+sys.path.append(os.environ["DOMINO_WORKING_DIR"])
 from domino_short_id import domino_short_id
 
 
