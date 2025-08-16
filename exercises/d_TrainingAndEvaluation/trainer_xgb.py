@@ -2,9 +2,6 @@
 from pathlib import Path
 import json
 from xgboost import XGBClassifier
-import os
-import sys
-sys.path.append(os.environ["DOMINO_WORKING_DIR"])
 from exercises.d_TrainingAndEvaluation.generic_trainer import train_fraud
 
 # Load DataFrame from dataset 
@@ -41,4 +38,3 @@ print(json.dumps({k: small.get(k) for k in ['roc_auc','f1_fraud','accuracy','log
 out_path = Path("/workflow/outputs/results")
 if out_path.parent.exists():
     out_path.write_text(json.dumps(small))  # JSON, not str(dict)
-
