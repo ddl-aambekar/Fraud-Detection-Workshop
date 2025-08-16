@@ -6,7 +6,7 @@ from flytekitplugins.domino.task import DatasetSnapshot
 
 DOMINO_WORKING_DIR = os.environ["DOMINO_WORKING_DIR"]
 # Command to run this code
-# pyflyte run --remote exercises/d_TrainingAndEvaluation/workflow.py credit_card_fraud_detection_workflow --name train_models --transformed_filename /mnt/data/Fraud-Detection-Workshop/transformed_cc_transactions.csv
+# pyflyte run --remote --name train_models exercises/d_TrainingAndEvaluation/workflow.py credit_card_fraud_detection_workflow
 
 @workflow
 def credit_card_fraud_detection_workflow():
@@ -15,7 +15,8 @@ def credit_card_fraud_detection_workflow():
     ada_training_task = DominoJobTask(
         name="Train AdaBoost classifier",
         domino_job_config=DominoJobConfig(
-            Command=f"python {DOMINO_WORKING_DIR}/exercises/d_TrainingAndEvaluation/trainer_ada.py"
+            Command=f"python {DOMINO_WORKING_DIR}/exercises/d_TrainingAndEvaluation/trainer_ada.py",
+            datasets=[DatasetSnapshot(name="Fraud-Detection-Workshop", version="latest")]
         ),
         inputs={"transformed_filename": str},
         outputs={"results": str},
@@ -26,7 +27,8 @@ def credit_card_fraud_detection_workflow():
     gnb_training_task = DominoJobTask(
         name="Train GaussianNB classifier",
         domino_job_config=DominoJobConfig(
-            Command=f"python {DOMINO_WORKING_DIR}/exercises/d_TrainingAndEvaluation/trainer_gnb.py"
+            Command=f"python {DOMINO_WORKING_DIR}/exercises/d_TrainingAndEvaluation/trainer_gnb.py",
+            datasets=[DatasetSnapshot(name="Fraud-Detection-Workshop", version="latest")]
         ),
         inputs={"transformed_filename": str},
         outputs={"results": str},
@@ -37,7 +39,8 @@ def credit_card_fraud_detection_workflow():
     xgb_training_task = DominoJobTask(
         name="Train XGBoost classifier",
         domino_job_config=DominoJobConfig(
-            Command=f"python {DOMINO_WORKING_DIR}/exercises/d_TrainingAndEvaluation/trainer_xgb.py"
+            Command=f"python {DOMINO_WORKING_DIR}/exercises/d_TrainingAndEvaluation/trainer_xgb.py",
+            datasets=[DatasetSnapshot(name="Fraud-Detection-Workshop", version="latest")]
         ),
         inputs={"transformed_filename": str},
         outputs={"results": str},
