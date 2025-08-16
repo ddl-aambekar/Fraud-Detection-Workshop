@@ -6,7 +6,7 @@ from flytekitplugins.domino.task import DatasetSnapshot
 
 DOMINO_WORKING_DIR = os.environ["DOMINO_WORKING_DIR"]
 # Command to run this code
-# pyflyte run --remote exercises/d_TrainingAndEvaluation/workflow.py credit_card_fraud_detection_workflow
+# pyflyte run --remote exercises/d_TrainingAndEvaluation/workflow.py credit_card_fraud_detection_workflow --name train_models --transformed_filename /mnt/data/Fraud-Detection-Workshop/transformed_cc_transactions.csv
 
 @workflow
 def credit_card_fraud_detection_workflow():
