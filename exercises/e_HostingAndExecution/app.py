@@ -1,15 +1,13 @@
 import os
 import streamlit as st
 import time
-import random
 import pandas as pd
-import numpy as np
 import requests
+import sys
+sys.path.append(os.environ["DOMINO_WORKING_DIR"])
 from exercises.c_DataEngineering.data_engineering import add_derived_features
 
-feature_scaling_endpoint = os.environ['feature_scaling_endpoint']
-feature_scaling_auth = os.environ['feature_scaling_auth']
-
+# --- Environment variables for model endpoints ---
 xgboost_endpoint = os.environ['xgboost_endpoint']
 xgboost_auth = os.environ['xgboost_auth']
 
@@ -19,7 +17,7 @@ adaboost_auth = os.environ['adaboost_auth']
 gaussiannb_endpoint = os.environ['gaussiannb_endpoint']
 gaussiannb_auth = os.environ['gaussiannb_auth']
 
-model_scaling_dict = {
+model_dict = {
     'XG Boost': {
         'endpoint': xgboost_endpoint,
         'auth': xgboost_auth,
@@ -34,43 +32,13 @@ model_scaling_dict = {
     }
 }
 
-# Define schema once at module level
-CLASSIFIER_SCHEMA = [
-    'num__Time', 'num__Amount', 'num__Age', 'num__Tenure', 'num__MerchantRisk',
-    'num__DeviceTrust', 'num__Txn24h', 'num__Avg30d', 'num__IPReputation',
-    'num__Latitude', 'num__Longitude', 'num__DistFromHome', 'num__Hour',
-    'num__CardPresent', 'num__amount_vs_avg30d_ratio', 'num__risk_score',
-    'num__trust_score', 'cat__TxType_payment', 'cat__TxType_purchase',
-    'cat__TxType_transfer', 'cat__TxType_withdrawal', 'cat__DeviceType_ATM',
-    'cat__DeviceType_POS', 'cat__DeviceType_desktop', 'cat__DeviceType_mobile',
-    'cat__DeviceType_web', 'cat__MerchantCat_clothing', 'cat__MerchantCat_electronics',
-    'cat__MerchantCat_entertainment', 'cat__MerchantCat_gas', 'cat__MerchantCat_grocery',
-    'cat__MerchantCat_restaurant', 'cat__MerchantCat_travel', 'cat__MerchantCat_utilities',
-    'cat__Channel_chip', 'cat__Channel_contactless', 'cat__Channel_in-store',
-    'cat__Channel_online', 'cat__generation_Baby Boomer', 'cat__generation_Generation X',
-    'cat__generation_Generation Z', 'cat__generation_Millennial'
-]
 
-
-def scaled_data_to_classifier_format(scaled_data):
-    """Convert scaled data array to classifier input format"""
-    values = scaled_data[0]  # First (and only) row
-    
-    # Dynamically create the dictionary using zip
-    classifier_data = dict(zip(CLASSIFIER_SCHEMA, values))
-    return classifier_data
-    
-
-def create_transaction_data(amount, hour, tx_type, card_present, age, tenure, 
-                          txn_24h, avg_30d, merchant_risk, device_trust, 
-                          ip_reputation, dist_from_home, latitude, longitude, 
-                          device_type, merchant_cat, channel):
-    """Create a single-row DataFrame with transaction data"""
-    
-    # Create timestamp for current time (you can modify this as needed)
+def create_transaction_data(amount, hour, tx_type, card_present, age, tenure,
+                            txn_24h, avg_30d, merchant_risk, device_trust,
+                            ip_reputation, dist_from_home, latitude, longitude,
+                            device_type, merchant_cat, channel):
+    """Create a single-row DataFrame with transaction data and derived features."""
     current_time = time.time()
-    
-    # Create raw transaction data matching your expected structure
     raw_data = {
         'Time': current_time,
         'Amount': amount,
@@ -91,119 +59,59 @@ def create_transaction_data(amount, hour, tx_type, card_present, age, tenure,
         'Channel': channel,
         'CardPresent': card_present
     }
-    
-    # Create DataFrame
     df = pd.DataFrame([raw_data])
-    
-    # Add derived features
     df_with_features = add_derived_features(df)
-    
     return df_with_features
 
 
-
+# --- Streamlit UI ---
 st.set_page_config(
     page_title="Fraud Detection System",
     page_icon="🔒",
     layout="wide"
 )
 
-# Custom CSS for styling
-st.markdown("""
-<style>
-    .main-header {
-        font-size: 3rem;
-        color: #1f77b4;
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .prediction-box {
-        padding: 2rem;
-        border-radius: 10px;
-        text-align: center;
-        margin: 2rem 0;
-    }
-    .fraud-alert {
-        background-color: #ff4b4b;
-        color: white;
-        border: 2px solid #ff0000;
-    }
-    .safe-alert {
-        background-color: #00cc88;
-        color: white;
-        border: 2px solid #00aa66;
-    }
-    .stButton > button {
-        background-color: #1f77b4;
-        color: white;
-        border: none;
-        padding: 0.75rem 2rem;
-        font-size: 1.1rem;
-        border-radius: 5px;
-        width: 100%;
-    }
-</style>
-""", unsafe_allow_html=True)
+st.title("🔒 Fraud Detection System")
+st.write("Simulate a transaction and analyze fraud risk using machine learning models.")
 
-st.markdown('<h1 class="main-header">🔒 Fraud Detection App</h1>', unsafe_allow_html=True)
-
-# Add model selection dropdown
-st.subheader("🤖 Model Selection")
-selected_model = st.selectbox(
-    "Choose Classifier Model",
-    options=list(model_scaling_dict.keys()),
-    index=2  # Default to GaussianNB
-)
-
-# Create three columns for better layout
+# Input fields
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.subheader("💰 Transaction Details")
-    amount = st.number_input("Amount", min_value=0.01, value=50.0, step=0.01)
-    hour = st.selectbox("Hour", range(24), index=12)
-    tx_type = st.selectbox("Transaction Type", ["purchase", "transfer", "payment", "withdrawal"])
-    card_present = st.selectbox("Card Present", [0, 1], format_func=lambda x: "Yes" if x else "No")
+    amount = st.number_input("Transaction Amount", min_value=1, max_value=10000, value=100)
+    age = st.slider("Customer Age", 18, 100, 30)
+    tenure = st.slider("Customer Tenure (years)", 0, 40, 5)
+    txn_24h = st.slider("Transactions in last 24h", 0, 50, 2)
+    avg_30d = st.number_input("Average Transaction (30d)", min_value=1, max_value=5000, value=200)
 
 with col2:
-    st.subheader("👤 Customer Profile")
-    age = st.slider("Age", 18, 80, 35)
-    tenure = st.slider("Tenure (years)", 0, 30, 5)
-    txn_24h = st.number_input("Transactions in 24h", min_value=0, value=1, step=1)
-    avg_30d = st.number_input("Avg 30d Amount", value=0.0, step=0.01)
+    merchant_risk = st.slider("Merchant Risk Score", -3.0, 3.0, 0.0)
+    device_trust = st.slider("Device Trust Score", -3.0, 3.0, 0.0)
+    ip_reputation = st.slider("IP Reputation Score", -3.0, 3.0, 0.0)
+    dist_from_home = st.slider("Distance from Home (km)", 0.0, 5000.0, 10.0)
+    latitude = st.number_input("Latitude", -90.0, 90.0, 37.7749)
+    longitude = st.number_input("Longitude", -180.0, 180.0, -122.4194)
 
 with col3:
-    st.subheader("🔍 Risk Factors")
-    merchant_risk = st.slider("Merchant Risk", -3.0, 3.0, 0.0, 0.1)
-    device_trust = st.slider("Device Trust", -3.0, 3.0, 0.0, 0.1)
-    ip_reputation = st.slider("IP Reputation", -3.0, 3.0, 0.0, 0.1)
-    dist_from_home = st.slider("Distance from Home", -2.0, 5.0, 0.0, 0.1)
-
-# Location and merchant details
-st.subheader("📍 Location & Merchant")
-col4, col5 = st.columns(2)
-
-with col4:
-    latitude = st.number_input("Latitude", value=40.0, step=0.01)
-    longitude = st.number_input("Longitude", value=-75.0, step=0.01)
-    
-with col5:
-    device_type = st.selectbox("Device Type", ["mobile", "desktop", "ATM", "tablet"])
-    merchant_cat = st.selectbox("Merchant Category", 
-                               ["grocery", "gas", "electronics", "travel", "clothing", "entertainment", "restaurant"])
+    hour = st.slider("Transaction Hour", 0, 23, 14)
+    tx_type = st.selectbox("Transaction Type", ["purchase", "withdrawal", "transfer", "payment"])
+    device_type = st.selectbox("Device Type", ["mobile", "web", "desktop", "POS", "ATM"])
+    merchant_cat = st.selectbox("Merchant Category",
+                                ["grocery", "electronics", "clothing", "entertainment", "travel", "restaurant", "gas", "utilities"])
     channel = st.selectbox("Channel", ["online", "in-store", "contactless", "chip"])
+    card_present = st.selectbox("Card Present", [0, 1])
+    selected_model = st.selectbox("Model", ["XG Boost", "ADA Boost", "GaussianNB"])
+
+st.markdown("---")
 
 # Prediction button and results
-st.markdown("---")
 predict_button = st.button("🔍 Predict Fraud Risk", type="primary")
 
 if predict_button:
-    # Show loading spinner
     with st.spinner("Analyzing transaction... 🔍"):
-        time.sleep(2)  # Simulate API call
+        time.sleep(2)  # Simulate latency
 
-        
-        # Create the transaction data with derived features
+        # Build transaction dataframe + features
         transaction_df = create_transaction_data(
             amount=amount,
             hour=hour,
@@ -223,152 +131,121 @@ if predict_button:
             merchant_cat=merchant_cat,
             channel=channel
         )
-        
-        print("Here's the data we have right now:")
-        print(transaction_df.to_dict('records')[0])
-        
-        # Create JSON structure matching your expected format
+
+        # JSON payload for classifier
         transaction_json = {
             "data": {
-                "Time": str(transaction_df['Time'].iloc[0]),
-                "Amount": str(transaction_df['Amount'].iloc[0]),
-                "Age": str(transaction_df['Age'].iloc[0]),
-                "Tenure": str(transaction_df['Tenure'].iloc[0]),
-                "MerchantRisk": str(transaction_df['MerchantRisk'].iloc[0]),
-                "DeviceTrust": str(transaction_df['DeviceTrust'].iloc[0]),
-                "Txn24h": str(transaction_df['Txn24h'].iloc[0]),
-                "Avg30d": str(transaction_df['Avg30d'].iloc[0]),
-                "IPReputation": str(transaction_df['IPReputation'].iloc[0]),
-                "Latitude": str(transaction_df['Latitude'].iloc[0]),
-                "Longitude": str(transaction_df['Longitude'].iloc[0]),
-                "DistFromHome": str(transaction_df['DistFromHome'].iloc[0]),
-                "Hour": str(transaction_df['Hour'].iloc[0]),
-                "TxType": transaction_df['TxType'].iloc[0],
-                "DeviceType": transaction_df['DeviceType'].iloc[0],
-                "MerchantCat": transaction_df['MerchantCat'].iloc[0],
-                "Channel": transaction_df['Channel'].iloc[0],
-                "CardPresent": str(transaction_df['CardPresent'].iloc[0]),
-                "amount_vs_avg30d_ratio": str(round(transaction_df['amount_vs_avg30d_ratio'].iloc[0], 2)),
-                "risk_score": str(round(transaction_df['risk_score'].iloc[0], 2)),
-                "trust_score": str(round(transaction_df['trust_score'].iloc[0], 2)),
-                "generation": transaction_df['generation'].iloc[0]
+                # --- Numeric features ---
+                "num__Time": float(transaction_df['Time'].iloc[0]),
+                "num__Amount": float(transaction_df['Amount'].iloc[0]),
+                "num__Age": float(transaction_df['Age'].iloc[0]),
+                "num__Tenure": float(transaction_df['Tenure'].iloc[0]),
+                "num__MerchantRisk": float(transaction_df['MerchantRisk'].iloc[0]),
+                "num__DeviceTrust": float(transaction_df['DeviceTrust'].iloc[0]),
+                "num__Txn24h": float(transaction_df['Txn24h'].iloc[0]),
+                "num__Avg30d": float(transaction_df['Avg30d'].iloc[0]),
+                "num__IPReputation": float(transaction_df['IPReputation'].iloc[0]),
+                "num__Latitude": float(transaction_df['Latitude'].iloc[0]),
+                "num__Longitude": float(transaction_df['Longitude'].iloc[0]),
+                "num__DistFromHome": float(transaction_df['DistFromHome'].iloc[0]),
+                "num__Hour": float(transaction_df['Hour'].iloc[0]),
+                "num__CardPresent": float(transaction_df['CardPresent'].iloc[0]),
+                "num__amount_vs_avg30d_ratio": float(transaction_df['amount_vs_avg30d_ratio'].iloc[0]),
+                "num__risk_score": float(transaction_df['risk_score'].iloc[0]),
+                "num__trust_score": float(transaction_df['trust_score'].iloc[0]),
+        
+                # --- One-hot categorical features ---
+                # Transaction type
+                "cat__TxType_payment": 1.0 if tx_type == "payment" else 0.0,
+                "cat__TxType_purchase": 1.0 if tx_type == "purchase" else 0.0,
+                "cat__TxType_transfer": 1.0 if tx_type == "transfer" else 0.0,
+                "cat__TxType_withdrawal": 1.0 if tx_type == "withdrawal" else 0.0,
+        
+                # Device type
+                "cat__DeviceType_ATM": 1.0 if device_type == "ATM" else 0.0,
+                "cat__DeviceType_POS": 1.0 if device_type == "POS" else 0.0,
+                "cat__DeviceType_desktop": 1.0 if device_type == "desktop" else 0.0,
+                "cat__DeviceType_mobile": 1.0 if device_type == "mobile" else 0.0,
+                "cat__DeviceType_web": 1.0 if device_type == "web" else 0.0,
+        
+                # Merchant category
+                "cat__MerchantCat_clothing": 1.0 if merchant_cat == "clothing" else 0.0,
+                "cat__MerchantCat_electronics": 1.0 if merchant_cat == "electronics" else 0.0,
+                "cat__MerchantCat_entertainment": 1.0 if merchant_cat == "entertainment" else 0.0,
+                "cat__MerchantCat_gas": 1.0 if merchant_cat == "gas" else 0.0,
+                "cat__MerchantCat_grocery": 1.0 if merchant_cat == "grocery" else 0.0,
+                "cat__MerchantCat_restaurant": 1.0 if merchant_cat == "restaurant" else 0.0,
+                "cat__MerchantCat_travel": 1.0 if merchant_cat == "travel" else 0.0,
+                "cat__MerchantCat_utilities": 1.0 if merchant_cat == "utilities" else 0.0,
+        
+                # Channel
+                "cat__Channel_chip": 1.0 if channel == "chip" else 0.0,
+                "cat__Channel_contactless": 1.0 if channel == "contactless" else 0.0,
+                "cat__Channel_in-store": 1.0 if channel == "in-store" else 0.0,
+                "cat__Channel_online": 1.0 if channel == "online" else 0.0,
+        
+                # Generation (from add_derived_features)
+                "cat__generation_Baby Boomer": 1.0 if transaction_df['generation'].iloc[0] == "Baby Boomer" else 0.0,
+                "cat__generation_Generation X": 1.0 if transaction_df['generation'].iloc[0] == "Generation X" else 0.0,
+                "cat__generation_Generation Z": 1.0 if transaction_df['generation'].iloc[0] == "Generation Z" else 0.0,
+                "cat__generation_Millennial": 1.0 if transaction_df['generation'].iloc[0] == "Millennial" else 0.0
             }
         }
 
-        scaled_transaction = None
-        fraud_prediction = None
 
-        # Make API call for input scaling
+        fraud_prediction = None
         try:
-            response = requests.post(
-                feature_scaling_endpoint,
-                auth=(
-                    feature_scaling_auth,
-                    feature_scaling_auth
-                ),
+            selected_endpoint = model_dict[selected_model]['endpoint']
+            selected_auth = model_dict[selected_model]['auth']
+
+            classifier_response = requests.post(
+                selected_endpoint,
+                auth=(selected_auth, selected_auth),
                 json=transaction_json
             )
-            
-            if response.status_code == 200:
-                resp = response.json()
-                scaled_transaction = resp['result']
-                print('scaled_transaction = ')
-                print(scaled_transaction)
 
-                # Convert scaled data to classifier format
-                classifier_input = scaled_data_to_classifier_format(scaled_transaction)
-                print('classifier_input = ')
-                print(classifier_input)
+            if classifier_response.status_code == 200:
+                classifier_resp = classifier_response.json()
+                fraud_prediction = classifier_resp['result']
 
-                # Get selected model endpoint and auth
-                selected_endpoint = model_scaling_dict[selected_model]['endpoint']
-                selected_auth = model_scaling_dict[selected_model]['auth']
+                # ✅ FIX: Always coerce fraud_prediction into a float
+                if isinstance(fraud_prediction, list) and len(fraud_prediction) > 0:
+                    fraud_prediction = float(fraud_prediction[0])
+                elif isinstance(fraud_prediction, (int, float)):
+                    fraud_prediction = float(fraud_prediction)
+                else:
+                    fraud_prediction = None
 
-                # Make API call to selected classifier
-                try:
-                    classifier_response = requests.post(
-                        selected_endpoint,
-                        auth=(selected_auth, selected_auth),
-                        json={"data": classifier_input}
-                    )
-                    
-                    if classifier_response.status_code == 200:
-                        classifier_resp = classifier_response.json()
-                        print('resp')
-                        print(classifier_resp)
-                        fraud_prediction = classifier_resp['result']
-                        print('fraud_prediction = ')
-                        print(fraud_prediction)
-                    else:
-                        st.error(f"Classifier API Error: {classifier_response.status_code}")
-                        print(f"Classifier error: {classifier_response.text}")
-                        
-                except requests.exceptions.RequestException as e:
-                    st.error(f"Classifier Connection Error: {str(e)}")
-
-
-                
+                print("fraud_prediction =", fraud_prediction)
             else:
-                st.error(f"API Error: {response.status_code}")
-                
+                st.error(f"Classifier API Error: {classifier_response.status_code}")
+                print(f"Classifier error: {classifier_response.text}")
+
         except requests.exceptions.RequestException as e:
-            st.error(f"Connection Error: {str(e)}")
+            st.error(f"Classifier Connection Error: {str(e)}")
 
-        
-        
-        # Dummy prediction logic (you can replace this with actual model)
-        final_risk_score = random.uniform(0, 1)
-        
-        # Simple heuristic for demo
-        risk_factors = [
-            amount > 500,
-            merchant_risk > 1.0,
-            device_trust < -1.0,
-            ip_reputation < -1.0,
-            dist_from_home > 2.0,
-            hour in [0, 1, 2, 3, 4, 5, 23]
-        ]
-        
-        final_risk_score = sum(risk_factors) / len(risk_factors)
-        is_fraud = final_risk_score > 0.4
-        
-        # Display results
-        if is_fraud:
-            st.markdown(f"""
-            <div class="prediction-box fraud-alert">
-                <h2>⚠️ FRAUD ALERT</h2>
-                <h3>Risk Score: {final_risk_score:.2%}</h3>
-                <p>This transaction has been flagged as potentially fraudulent.</p>
-                <p>Please review manually before processing.</p>
-                <p><strong>Model Used:</strong> {selected_model}</p>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-            <div class="prediction-box safe-alert">
-                <h2>✅ TRANSACTION APPROVED</h2>
-                <h3>Risk Score: {final_risk_score:.2%}</h3>
-                <p>This transaction appears to be legitimate.</p>
-                <p>Safe to process.</p>
-                <p><strong>Model Used:</strong> {selected_model}</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        # Show risk factors breakdown
-        st.subheader("📊 Risk Analysis")
-        
-        risk_data = {
-            "Factor": ["High Amount", "Merchant Risk", "Device Trust", "IP Reputation", "Distance", "Unusual Hour"],
-            "Score": [amount/1000, merchant_risk, device_trust, ip_reputation, dist_from_home, 1 if hour in [0,1,2,3,4,5,23] else 0],
-            "Status": ["⚠️" if factor else "✅" for factor in risk_factors]
-        }
-        
-        df = pd.DataFrame(risk_data)
-        st.dataframe(df, use_container_width=True)
+        # Fallback heuristic if classifier fails
+        final_risk_score = (
+            fraud_prediction
+            if fraud_prediction is not None
+            else sum([
+                amount > 500,
+                merchant_risk > 1.0,
+                device_trust < -1.0,
+                ip_reputation < -1.0,
+                dist_from_home > 2.0,
+                hour in [0, 1, 2, 3, 4, 5, 23]
+            ]) / 6
+        )
 
-# Footer
-st.markdown("---")
-st.markdown(
-    "<p style='text-align: center; color: #666;'>🔒 Fraud Detection System v1.0 | Built with Streamlit</p>",
-    unsafe_allow_html=True
-)
+        # ✅ No more list-vs-float error
+        is_fraud = float(final_risk_score) > 0.4
+
+        # --- Display results ---
+        st.subheader("Prediction Results")
+        col_a, col_b = st.columns(2)
+
+        with col_a:
+            st.metric("Fraud Probability", f"{final_risk_score:.2f}")
+        with col_b:
+            st.metric("Prediction", "🚨 FRAUD" if is_fraud else "✅ Legitimate")
