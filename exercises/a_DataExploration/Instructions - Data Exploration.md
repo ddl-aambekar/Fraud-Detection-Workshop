@@ -28,7 +28,7 @@ In this phase, we will begin the process of exploring a transactional dataset to
 
 11.  Save and Commit Code
 
-This concludes the "2. Data Exploration" section of the workshop
+This concludes the "1. Data Exploration" section of the workshop
 
 ## New Domino Concepts
 **Workspaces:** 

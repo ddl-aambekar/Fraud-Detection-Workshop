@@ -1,0 +1,85 @@
+[I 2025-08-20 05:28:30.652 ServerApp] jupyter_ai | extension was successfully linked.
+[I 2025-08-20 05:28:30.652 ServerApp] jupyter_lsp | extension was successfully linked.
+[I 2025-08-20 05:28:30.655 ServerApp] jupyter_server_mathjax | extension was successfully linked.
+[I 2025-08-20 05:28:30.655 ServerApp] jupyter_server_proxy | extension was successfully linked.
+[I 2025-08-20 05:28:30.658 ServerApp] jupyter_server_terminals | extension was successfully linked.
+[I 2025-08-20 05:28:30.661 ServerApp] jupyterlab | extension was successfully linked.
+[I 2025-08-20 05:28:30.661 ServerApp] jupyterlab_git | extension was successfully linked.
+[I 2025-08-20 05:28:30.664 ServerApp] nbclassic | extension was successfully linked.
+[I 2025-08-20 05:28:30.664 ServerApp] nbdime | extension was successfully linked.
+[I 2025-08-20 05:28:30.665 ServerApp] Writing Jupyter server cookie secret to /home/ubuntu/.local/share/jupyter/runtime/jupyter_cookie_secret
+[I 2025-08-20 05:28:30.667 ServerApp] notebook_shim | extension was successfully linked.
+/opt/conda/lib/python3.10/site-packages/traitlets/traitlets.py:1897: FutureWarning: ServerApp.preferred_dir config is deprecated in jupyter-server 2.0. Use FileContentsManager.preferred_dir instead
+  return t.cast(Sentinel, self._get_trait_default_generator(names[0])(self))
+[W 2025-08-20 05:28:30.703 ServerApp] All authentication is disabled.  Anyone who can connect to this server will be able to run code.
+[I 2025-08-20 05:28:30.703 ServerApp] notebook_shim | extension was successfully loaded.
+[I 2025-08-20 05:28:30.704 AiExtension] Configured provider allowlist: None
+[I 2025-08-20 05:28:30.704 AiExtension] Configured provider blocklist: None
+[I 2025-08-20 05:28:30.704 AiExtension] Configured model allowlist: None
+[I 2025-08-20 05:28:30.704 AiExtension] Configured model blocklist: None
+[I 2025-08-20 05:28:30.704 AiExtension] Configured model parameters: {}
+[I 2025-08-20 05:28:30.720 AiExtension] Registered model provider `ai21`.
+[W 2025-08-20 05:28:30.722 AiExtension] Unable to load model provider `amazon-bedrock`. Please install the `langchain_aws` package.
+[W 2025-08-20 05:28:30.723 AiExtension] Unable to load model provider `amazon-bedrock-chat`. Please install the `langchain_aws` package.
+[W 2025-08-20 05:28:30.723 AiExtension] Unable to load model provider `amazon-bedrock-custom`. Please install the `langchain_aws` package.
+[W 2025-08-20 05:28:30.723 AiExtension] Unable to load model provider `anthropic-chat`. Please install the `langchain_anthropic` package.
+[W 2025-08-20 05:28:30.723 AiExtension] Unable to load model provider `azure-chat-openai`. Please install the `langchain_openai` package.
+[W 2025-08-20 05:28:30.724 AiExtension] Unable to load model provider `cohere`. Please install the `langchain_cohere` package.
+[W 2025-08-20 05:28:30.724 AiExtension] Unable to load model provider `gemini`. Please install the `langchain_google_genai` package.
+[I 2025-08-20 05:28:30.724 AiExtension] Registered model provider `gpt4all`.
+[I 2025-08-20 05:28:30.724 AiExtension] Registered model provider `huggingface_hub`.
+[W 2025-08-20 05:28:30.724 AiExtension] Unable to load model provider `mistralai`. Please install the `langchain_mistralai` package.
+[W 2025-08-20 05:28:30.724 AiExtension] Unable to load model provider `nvidia-chat`. Please install the `langchain_nvidia_ai_endpoints` package.
+[W 2025-08-20 05:28:30.724 AiExtension] Unable to load model provider `ollama`. Please install the `langchain_ollama` package.
+[W 2025-08-20 05:28:30.725 AiExtension] Unable to load model provider `openai`. Please install the `langchain_openai` package.
+[W 2025-08-20 05:28:30.725 AiExtension] Unable to load model provider `openai-chat`. Please install the `langchain_openai` package.
+[W 2025-08-20 05:28:30.725 AiExtension] Unable to load model provider `openai-chat-custom`. Please install the `langchain_openai` package.
+[W 2025-08-20 05:28:30.725 AiExtension] Unable to load model provider `openrouter`. Please install the `langchain_openai` package.
+[I 2025-08-20 05:28:30.725 AiExtension] Registered model provider `qianfan`.
+[W 2025-08-20 05:28:30.725 AiExtension] Unable to load model provider `sagemaker-endpoint`. Please install the `langchain_aws` package.
+[I 2025-08-20 05:28:30.726 AiExtension] Registered model provider `togetherai`.
+[W 2025-08-20 05:28:30.741 AiExtension] Unable to load embeddings model provider class from entry point `azure`: No module named 'langchain_openai'.
+[W 2025-08-20 05:28:30.741 AiExtension] Unable to load embeddings model provider class from entry point `bedrock`: No module named 'langchain_aws'.
+[W 2025-08-20 05:28:30.742 AiExtension] Unable to load embeddings model provider class from entry point `cohere`: No module named 'langchain_cohere'.
+[I 2025-08-20 05:28:30.742 AiExtension] Registered embeddings model provider `gpt4all`.
+[I 2025-08-20 05:28:30.742 AiExtension] Registered embeddings model provider `huggingface_hub`.
+[W 2025-08-20 05:28:30.742 AiExtension] Unable to load embeddings model provider class from entry point `mistralai`: No module named 'langchain_mistralai'.
+[W 2025-08-20 05:28:30.742 AiExtension] Unable to load embeddings model provider class from entry point `ollama`: No module named 'langchain_ollama'.
+[W 2025-08-20 05:28:30.742 AiExtension] Unable to load embeddings model provider class from entry point `openai`: No module named 'langchain_openai'.
+[W 2025-08-20 05:28:30.743 AiExtension] Unable to load embeddings model provider class from entry point `openai-custom`: No module named 'langchain_openai'.
+[I 2025-08-20 05:28:30.743 AiExtension] Registered embeddings model provider `qianfan`.
+[I 2025-08-20 05:28:30.750 AiExtension] Registered providers.
+[I 2025-08-20 05:28:30.750 AiExtension] Registered jupyter_ai server extension
+[I 2025-08-20 05:28:30.768 AiExtension] Registered chat handler `ask` with command `/ask`.
+[I 2025-08-20 05:28:30.768 AiExtension] Registered chat handler `clear` with command `/clear`.
+[I 2025-08-20 05:28:30.768 AiExtension] Registered chat handler `default` with command `default`.
+[I 2025-08-20 05:28:30.768 AiExtension] Registered chat handler `export` with command `/export`.
+[I 2025-08-20 05:28:30.769 AiExtension] Registered chat handler `fix` with command `/fix`.
+[I 2025-08-20 05:28:30.769 AiExtension] Registered chat handler `generate` with command `/generate`.
+[I 2025-08-20 05:28:30.769 AiExtension] Registered chat handler `help` with command `/help`.
+[I 2025-08-20 05:28:30.770 AiExtension] Registered chat handler `learn` with command `/learn`.
+[I 2025-08-20 05:28:30.785 AiExtension] Registered context provider `file`.
+[I 2025-08-20 05:28:30.786 AiExtension] Initialized Jupyter AI server extension in 82 ms.
+[I 2025-08-20 05:28:30.787 ServerApp] jupyter_ai | extension was successfully loaded.
+[I 2025-08-20 05:28:30.789 ServerApp] jupyter_lsp | extension was successfully loaded.
+[I 2025-08-20 05:28:30.790 ServerApp] jupyter_server_mathjax | extension was successfully loaded.
+[I 2025-08-20 05:28:30.806 ServerApp] jupyter_server_proxy | extension was successfully loaded.
+[I 2025-08-20 05:28:30.807 ServerApp] jupyter_server_terminals | extension was successfully loaded.
+[I 2025-08-20 05:28:30.809 LabApp] JupyterLab extension loaded from /opt/conda/lib/python3.10/site-packages/jupyterlab
+[I 2025-08-20 05:28:30.809 LabApp] JupyterLab application directory is /opt/conda/share/jupyter/lab
+[I 2025-08-20 05:28:30.809 LabApp] Extension Manager is 'pypi'.
+[I 2025-08-20 05:28:30.840 ServerApp] jupyterlab | extension was successfully loaded.
+[I 2025-08-20 05:28:30.848 ServerApp] jupyterlab_git | extension was successfully loaded.
+[I 2025-08-20 05:28:30.852 ServerApp] nbclassic | extension was successfully loaded.
+[I 2025-08-20 05:28:30.886 ServerApp] nbdime | extension was successfully loaded.
+[I 2025-08-20 05:28:30.886 ServerApp] Serving notebooks from local directory: /
+[I 2025-08-20 05:28:30.886 ServerApp] Jupyter Server 2.16.0 is running at:
+[I 2025-08-20 05:28:30.886 ServerApp] http://run-68a55ce636caf1107f4f1d91-gplml:8888/integration-test/Fraud-Detection-Workshop/notebookSession/68a55ce636caf1107f4f1d91/lab/tree/mnt
+[I 2025-08-20 05:28:30.886 ServerApp]     http://127.0.0.1:8888/integration-test/Fraud-Detection-Workshop/notebookSession/68a55ce636caf1107f4f1d91/lab/tree/mnt
+[I 2025-08-20 05:28:30.886 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 2025-08-20 05:28:31.180 ServerApp] Skipped non-installed server(s): bash-language-server, dockerfile-language-server-nodejs, javascript-typescript-langserver, jedi-language-server, julia-language-server, pyright, python-language-server, python-lsp-server, r-languageserver, sql-language-server, texlab, typescript-language-server, unified-language-server, vscode-css-languageserver-bin, vscode-html-languageserver-bin, vscode-json-languageserver-bin, yaml-language-server
+[W 2025-08-20 05:28:33.482 LabApp] Could not determine jupyterlab build status without nodejs
+[I 2025-08-20 05:28:33.659 ServerApp] Client connected. ID: 551bc835c2314d0dabf2b82d194cd779
+[I 2025-08-20 05:28:37.453 ServerApp] New terminal with automatic name: 1
+[W 2025-08-20 05:28:58.358 ServerApp] delete /mnt/MetLife _ Domino User Training.pdf
+[W 2025-08-20 05:28:58.361 ServerApp] delete /mnt/Final_MetLife_Domino_User_Training.pdf

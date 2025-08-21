@@ -48,4 +48,4 @@ else
 fi
 
 # Run the app
-streamlit run exercises/e_HostingAndExecution/app.py
+streamlit run exercises/d_HostingAndExecution/app.py

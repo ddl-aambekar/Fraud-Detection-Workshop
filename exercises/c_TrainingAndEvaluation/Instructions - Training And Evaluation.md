@@ -23,7 +23,7 @@ Create model name
 
 In governnace 
 
-This concludes the "4. MODEL TRAINING and EVALUATION" section of the workshop.
+This concludes the "3. MODEL TRAINING and EVALUATION" section of the workshop.
 
 ## New Domino Concepts
 

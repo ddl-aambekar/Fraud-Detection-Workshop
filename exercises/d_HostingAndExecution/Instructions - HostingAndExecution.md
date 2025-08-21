@@ -4,7 +4,7 @@ In this phase, we will deploy the model for consumption by other users.  We will
 ## Exercise Instructions
 
 
-This concludes the This Concludes the "5. Delivery & Hosting" section of the workshop
+This concludes the This Concludes the "4. Delivery & Hosting" section of the workshop
 
 
 ## New Domino Concepts

@@ -5,7 +5,7 @@ import pandas as pd
 import requests
 import sys
 sys.path.append(os.environ["DOMINO_WORKING_DIR"])
-from exercises.c_DataEngineering.data_engineering import add_derived_features
+from exercises.b_DataEngineering.data_engineering import add_derived_features
 
 # --- Environment variables for model endpoints ---
 xgboost_endpoint = os.environ['xgboost_endpoint']

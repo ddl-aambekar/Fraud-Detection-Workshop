@@ -16,7 +16,7 @@ In this phase, we will continue to prepare the data for training by executing so
 
 6.  Review the artifacts created by the job run.
 
-This concludes the "3. DATA ENGINEERING" section of the workshop.
+This concludes the "2. DATA ENGINEERING" section of the workshop.
 
 ## New Domino Concepts
 

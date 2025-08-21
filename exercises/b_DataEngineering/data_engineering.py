@@ -45,8 +45,9 @@ dataset_name = os.environ.get(domino_project_name, "Fraud-Detection-Workshop")
 
 # Construct paths for data storage and artifacts
 # In Domino, 'data' directory is for datasets, 'artifacts' for outputs like reports
-domino_dataset_dir = f"{domino_working_dir.replace('code', 'data')}/{domino_project_name}"
-domino_artifact_dir = domino_working_dir.replace('code', 'artifacts')
+domino_datasource_dir = '/domino/datasets/local'
+domino_dataset_dir = f"{domino_datasource_dir}/{domino_project_name}"
+domino_artifact_dir = '/mnt/artifacts'
 clean_path = f"{domino_dataset_dir}/{clean_filename}"
 
 
