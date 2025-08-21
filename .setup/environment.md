@@ -44,7 +44,7 @@ ENV LDFLAGS=-fno-lto
 ENV PYTHONPATH="${PYTHONPATH}:/mnt/code"
 
 # Install Flask & uWSGI
-RUN pip install --no-cache-dir Flask Flask-Compress Flask-Cors uwsgi six prometheus-client ydata_profiling streamlit st-pages streamlit-extras altair-saver
+RUN pip install --no-cache-dir Flask Flask-Compress Flask-Cors uwsgi six prometheus-client ydata_profiling streamlit st-pages streamlit-extras altair-saver "nbclient>=0.6.7,<0.7" "nbconvert>=6.5.4,<7" "lxml[html_clean]"
 ```
 
 ### Plugable Workspace Tools
